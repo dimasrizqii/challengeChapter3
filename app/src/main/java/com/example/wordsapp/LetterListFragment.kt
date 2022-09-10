@@ -1,5 +1,6 @@
 package com.example.wordsapp
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -18,12 +19,19 @@ class LetterListFragment : Fragment() {
     private var _binding: FragmentLetterListBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var onDataPass: OnDataPass
+
     private lateinit var recyclerView: RecyclerView
     private var isLinearLayoutManager = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onDataPass = context as OnDataPass
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?)
@@ -35,6 +43,14 @@ class LetterListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recyclerView = binding.recyclerView
         chooseLayout()
+
+        val letterAdapter = LetterAdapter()
+        recyclerView.adapter = letterAdapter
+        letterAdapter.onItemClickCallback(object : OnItemClickCallback{
+            override fun onItemClicked(data: String) {
+                onDataPass.onDataPass(data)
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -50,7 +66,6 @@ class LetterListFragment : Fragment() {
         } else {
             recyclerView.layoutManager = GridLayoutManager(context, 2)
         }
-        recyclerView.adapter = LetterAdapter()
     }
 
     private fun setIcon(menuItem: MenuItem?) {
