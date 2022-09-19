@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.wordsapp.databinding.FragmentWordListBinding
@@ -14,6 +15,8 @@ class WordListFragment : Fragment() {
     private var _binding: FragmentWordListBinding? = null
 
     private val binding get() = _binding!!
+
+    private val viewModel: MainViewModel by activityViewModels()
 
     private lateinit var letterId: String
 
@@ -34,11 +37,14 @@ class WordListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = WordAdapter(letterId, requireContext())
 
         recyclerView.addItemDecoration(
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         )
+
+        viewModel.list.observe(viewLifecycleOwner){
+            recyclerView.adapter = WordAdapter(it, requireContext())
+        }
     }
 
     override fun onDestroyView() {
